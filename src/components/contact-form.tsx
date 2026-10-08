@@ -2,7 +2,17 @@ import { useCallback, useState, type ChangeEvent, type FormEvent } from 'react';
 import { AlertCircle, CheckCircle2, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { contactSchema, type ContactInput } from '@/lib/contact-schema';
-import { sendCollaborationBrief } from '~/server/send-collaboration-brief';
+import emailjs from '@emailjs/browser';
+
+// Initialize EmailJS with your public key
+// Get this from your EmailJS account: https://dashboard.emailjs.com/admin/account
+const EMAILJS_PUBLIC_KEY = 'YOUR_EMAILJS_PUBLIC_KEY';
+const EMAILJS_SERVICE_ID = 'YOUR_EMAILJS_SERVICE_ID';
+const EMAILJS_TEMPLATE_ID = 'YOUR_EMAILJS_TEMPLATE_ID';
+
+if (EMAILJS_PUBLIC_KEY !== 'YOUR_EMAILJS_PUBLIC_KEY') {
+  emailjs.init(EMAILJS_PUBLIC_KEY);
+}
 
 interface ContactFormProps {
   selectedCategory?: string;
@@ -91,30 +101,57 @@ export function ContactForm({
     }
 
     try {
-      // Call the server function to send the email
-      const response = await sendCollaborationBrief(validation.data);
-
-      if (!response.success) {
-        setServerError(response.error || 'Failed to send your message. Please try again.');
+      // Check if EmailJS is properly configured
+      if (EMAILJS_PUBLIC_KEY === 'YOUR_EMAILJS_PUBLIC_KEY') {
+        setServerError(
+          'Email service is not configured. Please contact the site administrator.'
+        );
         setFormState('error');
         return;
       }
 
-      setSubmittedData(validation.data);
-      setFormState('success');
-      resetForm();
+      const { name, company, category, email, message, packageName } = validation.data;
 
-      onSuccess?.(validation.data);
+      // Send email using EmailJS
+      const response = await emailjs.send(
+        EMAILJS_SERVICE_ID,
+        EMAILJS_TEMPLATE_ID,
+        {
+          to_email: 'the9jacurator@gmail.com',
+          from_name: name,
+          from_email: email,
+          company_name: company,
+          category: category,
+          package_interest: packageName || 'Not specified',
+          message: message,
+          submission_date: new Date().toLocaleDateString('en-NG', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+          }),
+        },
+        EMAILJS_PUBLIC_KEY
+      );
 
-      // Auto-reset success state after 6 seconds
-      window.setTimeout(() => {
-        setFormState('idle');
-        setSubmittedData(null);
-      }, 6000);
+      if (response.status === 200) {
+        setSubmittedData(validation.data);
+        setFormState('success');
+        resetForm();
+
+        onSuccess?.(validation.data);
+
+        // Auto-reset success state after 6 seconds
+        window.setTimeout(() => {
+          setFormState('idle');
+          setSubmittedData(null);
+        }, 6000);
+      } else {
+        throw new Error('Failed to send email');
+      }
     } catch (error) {
       console.error('Form submission error:', error);
       setServerError(
-        error instanceof Error ? error.message : 'An unexpected error occurred. Please try again.'
+        'Failed to send your message. Please try again or contact support.'
       );
       setFormState('error');
     }
@@ -184,7 +221,7 @@ export function ContactForm({
             onChange={handleInputChange}
             placeholder="Your Brand"
             className={`form-control ${errors.company ? 'form-control-error' : ''}`}
-            disabled={formState === 'submitting"}
+            disabled={formState === 'submitting'}
           />
           {errors.company && <span className="form-error-text">{errors.company}</span>}
         </div>

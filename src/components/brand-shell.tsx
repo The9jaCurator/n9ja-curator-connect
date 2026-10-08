@@ -1,12 +1,12 @@
 import { Link } from '@tanstack/react-router';
 import { Instagram, Mail, MessageCircle, Music2, Send, Twitter } from 'lucide-react';
 
-const socialProfiles = [
-  { label: 'TikTok', icon: Music2 },
-  { label: 'Instagram', icon: Instagram },
-  { label: 'Telegram', icon: Send },
-  { label: 'X', icon: Twitter },
-  { label: 'WhatsApp Business', icon: MessageCircle },
+export const socialProfiles = [
+  { label: 'Instagram', href: 'https://instagram.com/the9jacurator', icon: Instagram },
+  { label: 'TikTok', href: 'https://tiktok.com/@the9jacurator', icon: Music2 },
+  { label: 'X', href: 'https://x.com/the9jacurator', icon: Twitter },
+  { label: 'WhatsApp', href: 'https://wa.me/2348000000000', icon: MessageCircle },
+  { label: 'Email', href: 'mailto:myrdpa@gmail.com', icon: Mail },
 ] as const;
 
 export function Brand() {
@@ -23,14 +23,19 @@ export function Brand() {
 export function SocialLinks({ compact = false }: { compact?: boolean }) {
   return (
     <div className={`social-links ${compact ? 'social-links-compact' : ''}`} aria-label="Social profiles">
-      {socialProfiles.map(({ label, icon: Icon }) => (
-        <span className="social-link social-link-pending" title={`${label} profile coming soon`} aria-label={`${label} profile coming soon`} key={label}>
+      {socialProfiles.map(({ label, href, icon: Icon }) => (
+        <a
+          key={label}
+          className="social-link"
+          href={href}
+          title={label}
+          aria-label={label}
+          target={href.startsWith('http') ? '_blank' : undefined}
+          rel={href.startsWith('http') ? 'noreferrer noopener' : undefined}
+        >
           <Icon />
-        </span>
+        </a>
       ))}
-      <a className="social-link" href="mailto:myrdpa@gmail.com" title="Email The 9ja Curator" aria-label="Email The 9ja Curator">
-        <Mail />
-      </a>
     </div>
   );
 }
@@ -42,7 +47,9 @@ export function SiteFooter() {
         <Brand />
         <SocialLinks />
         <span className="footer-copy">© 2026 The 9ja Curator. Thoughtfully curated. Always.</span>
-        <Link className="nav-link" to="/">Home</Link>
+        <Link className="nav-link" to="/">
+          Home
+        </Link>
       </div>
     </footer>
   );

@@ -2,6 +2,7 @@ import { useCallback, useState, type ChangeEvent, type FormEvent } from 'react';
 import { AlertCircle, CheckCircle2, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { contactSchema, type ContactInput } from '@/lib/contact-schema';
+import { sendCollaborationBrief } from '~/server/send-collaboration-brief';
 
 interface ContactFormProps {
   selectedCategory?: string;
@@ -21,6 +22,7 @@ export function ContactForm({
   const [formState, setFormState] = useState<FormState>('idle');
   const [errors, setErrors] = useState<Partial<Record<keyof ContactInput, string>>>({});
   const [submittedData, setSubmittedData] = useState<ContactInput | null>(null);
+  const [serverError, setServerError] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     name: '',
     company: '',
@@ -58,13 +60,16 @@ export function ContactForm({
       packageName: selectedPackage || '',
     });
     setErrors({});
+    setServerError(null);
   }, [selectedCategory, selectedPackage]);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setFormState('submitting');
     setErrors({});
+    setServerError(null);
 
+    // Client-side validation first
     const validation = contactSchema.safeParse({
       name: formData.name,
       company: formData.company,
@@ -86,19 +91,31 @@ export function ContactForm({
     }
 
     try {
-      await new Promise((resolve) => setTimeout(resolve, 800));
+      // Call the server function to send the email
+      const response = await sendCollaborationBrief(validation.data);
+
+      if (!response.success) {
+        setServerError(response.error || 'Failed to send your message. Please try again.');
+        setFormState('error');
+        return;
+      }
+
       setSubmittedData(validation.data);
       setFormState('success');
       resetForm();
 
       onSuccess?.(validation.data);
 
+      // Auto-reset success state after 6 seconds
       window.setTimeout(() => {
         setFormState('idle');
         setSubmittedData(null);
-      }, 5000);
+      }, 6000);
     } catch (error) {
       console.error('Form submission error:', error);
+      setServerError(
+        error instanceof Error ? error.message : 'An unexpected error occurred. Please try again.'
+      );
       setFormState('error');
     }
   }
@@ -123,7 +140,7 @@ export function ContactForm({
             }}
             className="mt-6"
           >
-            Start over
+            Send another inquiry
           </Button>
         </div>
       </div>
@@ -132,10 +149,12 @@ export function ContactForm({
 
   return (
     <form onSubmit={handleSubmit} className="contact-form" noValidate>
-      {formState === 'error' && Object.keys(errors).length > 0 && (
+      {formState === 'error' && (serverError || Object.keys(errors).length > 0) && (
         <div className="form-error-banner" role="alert">
           <AlertCircle />
-          <p>Please correct the highlighted fields and try again.</p>
+          <p>
+            {serverError || 'Please correct the highlighted fields and try again.'}
+          </p>
         </div>
       )}
 
@@ -165,7 +184,7 @@ export function ContactForm({
             onChange={handleInputChange}
             placeholder="Your Brand"
             className={`form-control ${errors.company ? 'form-control-error' : ''}`}
-            disabled={formState === 'submitting'}
+            disabled={formState === 'submitting"}
           />
           {errors.company && <span className="form-error-text">{errors.company}</span>}
         </div>
@@ -252,4 +271,3 @@ export function ContactForm({
     </form>
   );
 }
-

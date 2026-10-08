@@ -2,13 +2,10 @@ import { useCallback, useState, type ChangeEvent, type FormEvent } from 'react';
 import { AlertCircle, CheckCircle2, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { contactSchema, type ContactInput } from '@/lib/contact-schema';
-import emailjs from '@emailjs/browser';
 
 const EMAILJS_PUBLIC_KEY = 'id-kOFQ2ufXotqFuh';
 const EMAILJS_SERVICE_ID = 'service_p3lkcqh';
 const EMAILJS_TEMPLATE_ID = 'template_nj4zd3h';
-
-emailjs.init(EMAILJS_PUBLIC_KEY);
 
 interface ContactFormProps {
   selectedCategory?: string;
@@ -96,6 +93,14 @@ export function ContactForm({
     }
 
     try {
+      // Check if EmailJS is available globally
+      if (typeof window === 'undefined' || !('emailjs' in window)) {
+        setServerError('Email service is loading. Please try again in a moment.');
+        setFormState('error');
+        return;
+      }
+
+      const emailjs = (window as any).emailjs;
       const { name, company, category, email, message, packageName } = validation.data;
 
       const response = await emailjs.send(
@@ -133,7 +138,9 @@ export function ContactForm({
       }
     } catch (error) {
       console.error('EmailJS error:', error);
-      setServerError('Failed to send your message. Please try again or contact support.');
+      setServerError(
+        `Failed to send your message: ${error instanceof Error ? error.message : 'Unknown error'}. Please try again.`
+      );
       setFormState('error');
     }
   }

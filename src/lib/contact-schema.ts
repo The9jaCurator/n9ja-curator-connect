@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-export const CONTACT_RECIPIENT = 'myrdpa@gmail.com';
+export const CONTACT_RECIPIENT = 'the9jacurator@gmail.com';
 
 export const contactSchema = z.object({
   name: z.string().trim().min(2, 'Please enter your full name.').max(120, 'Name must be 120 characters or fewer.'),

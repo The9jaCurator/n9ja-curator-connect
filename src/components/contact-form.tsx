@@ -4,15 +4,11 @@ import { Button } from '@/components/ui/button';
 import { contactSchema, type ContactInput } from '@/lib/contact-schema';
 import emailjs from '@emailjs/browser';
 
-// Initialize EmailJS with your public key
-// Get this from your EmailJS account: https://dashboard.emailjs.com/admin/account
-const EMAILJS_PUBLIC_KEY = 'YOUR_EMAILJS_PUBLIC_KEY';
-const EMAILJS_SERVICE_ID = 'YOUR_EMAILJS_SERVICE_ID';
-const EMAILJS_TEMPLATE_ID = 'YOUR_EMAILJS_TEMPLATE_ID';
+const EMAILJS_PUBLIC_KEY = 'id-kOFQ2ufXotqFuh';
+const EMAILJS_SERVICE_ID = 'service_p3lkcqh';
+const EMAILJS_TEMPLATE_ID = 'template_nj4zd3h';
 
-if (EMAILJS_PUBLIC_KEY !== 'YOUR_EMAILJS_PUBLIC_KEY') {
-  emailjs.init(EMAILJS_PUBLIC_KEY);
-}
+emailjs.init(EMAILJS_PUBLIC_KEY);
 
 interface ContactFormProps {
   selectedCategory?: string;
@@ -79,7 +75,6 @@ export function ContactForm({
     setErrors({});
     setServerError(null);
 
-    // Client-side validation first
     const validation = contactSchema.safeParse({
       name: formData.name,
       company: formData.company,
@@ -101,29 +96,20 @@ export function ContactForm({
     }
 
     try {
-      // Check if EmailJS is properly configured
-      if (EMAILJS_PUBLIC_KEY === 'YOUR_EMAILJS_PUBLIC_KEY') {
-        setServerError(
-          'Email service is not configured. Please contact the site administrator.'
-        );
-        setFormState('error');
-        return;
-      }
-
       const { name, company, category, email, message, packageName } = validation.data;
 
-      // Send email using EmailJS
       const response = await emailjs.send(
         EMAILJS_SERVICE_ID,
         EMAILJS_TEMPLATE_ID,
         {
           to_email: 'the9jacurator@gmail.com',
+          to_name: 'The 9ja Curator',
           from_name: name,
           from_email: email,
           company_name: company,
-          category: category,
+          category,
           package_interest: packageName || 'Not specified',
-          message: message,
+          message,
           submission_date: new Date().toLocaleDateString('en-NG', {
             year: 'numeric',
             month: 'long',
@@ -137,22 +123,17 @@ export function ContactForm({
         setSubmittedData(validation.data);
         setFormState('success');
         resetForm();
-
         onSuccess?.(validation.data);
-
-        // Auto-reset success state after 6 seconds
         window.setTimeout(() => {
           setFormState('idle');
           setSubmittedData(null);
         }, 6000);
       } else {
-        throw new Error('Failed to send email');
+        throw new Error('Email send failed');
       }
     } catch (error) {
-      console.error('Form submission error:', error);
-      setServerError(
-        'Failed to send your message. Please try again or contact support.'
-      );
+      console.error('EmailJS error:', error);
+      setServerError('Failed to send your message. Please try again or contact support.');
       setFormState('error');
     }
   }
@@ -189,9 +170,7 @@ export function ContactForm({
       {formState === 'error' && (serverError || Object.keys(errors).length > 0) && (
         <div className="form-error-banner" role="alert">
           <AlertCircle />
-          <p>
-            {serverError || 'Please correct the highlighted fields and try again.'}
-          </p>
+          <p>{serverError || 'Please correct the highlighted fields and try again.'}</p>
         </div>
       )}
 

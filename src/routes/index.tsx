@@ -1,24 +1,66 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute } from '@tanstack/react-router';
+import { useState, type FormEvent } from 'react';
+import { ArrowUpRight, ArrowRight, Check, CheckCircle2, MapPin, ShieldCheck, Globe2, Sparkles, Headphones, TrendingUp, Layers3, Menu, X, Download, Send } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import heroImage from '@/assets/curator-hero.jpg';
+import techImage from '@/assets/tech.jpg';
+import skincareImage from '@/assets/skincare.jpg';
+import fashionImage from '@/assets/fashion.jpg';
 
-// No head() here: the home route inherits title/description/og/twitter from
-// __root.tsx, and ships no og:image so serve-time hosting can inject the
-// project's social preview (explicit og:image or latest screenshot).
-export const Route = createFileRoute("/")({
+export const Route = createFileRoute('/')({
+  head: () => ({ meta: [
+    { title: 'The 9ja Curator | Lifestyle Curation & Brand Partnerships' },
+    { name: 'description', content: 'Bridging global manufacturers and the Nigerian consumer market through trusted product curation. Explore tech, skincare, fashion and brand partnerships.' },
+    { property: 'og:title', content: 'The 9ja Curator | Lifestyle Curation & Brand Partnerships' },
+    { property: 'og:description', content: 'Considered products. Local insight. Meaningful partnerships. Discover The 9ja Curator’s lifestyle media kit and collaboration packages.' },
+    { property: 'og:type', content: 'website' },
+    { name: 'twitter:card', content: 'summary_large_image' },
+  ] }),
   component: Index,
 });
 
-// IMPORTANT: Replace this placeholder. See ./README.md for routing conventions.
+const pillars = [
+  { title: 'Gadgets & Tech Accessories', category: 'Gadgets & Tech Accessories', image: techImage, description: 'Smart tools, fast chargers, and everyday essentials that make life work better.', tag: 'Practical. Tested. Everyday.' },
+  { title: 'Skincare Products', category: 'Skincare Products', image: skincareImage, description: 'Thoughtful grooming and glowing-skin essentials, with safety always in focus.', tag: 'Trusted & NAFDAC-conscious' },
+  { title: 'Fashion Accessories', category: 'Fashion Accessories', image: fashionImage, description: 'The finishing touches. Sleek accessories that bring personal style to everyday life.', tag: 'Considered style. Daily wear.' },
+];
+const packages = [
+  { name: 'Starter Spotlight Package', description: 'A thoughtful introduction to your product and what makes it worth discovering.', quote: 'Project-based', caption: 'A focused product spotlight', features: ['Dedicated product review', 'Product photography & lifestyle styling', 'Social media spotlight', 'Clear product call-to-action'], cta: 'Choose Starter', featured: false },
+  { name: 'Growth Integration Package', description: 'Put your product in context with a richer, multi-format lifestyle story.', quote: 'Campaign-based', caption: 'A connected content campaign', features: ['Everything in Starter Spotlight', 'Multi-format lifestyle content', 'Cross-pillar product integration', 'Campaign insights & reporting', 'Content usage options'], cta: 'Choose Growth', featured: true },
+  { name: 'Exclusive Ambassador Retainer', description: 'Build a lasting connection with an ongoing, dedicated voice for your brand.', quote: 'Monthly retainer', caption: 'A long-term brand partnership', features: ['Ongoing brand representation', 'Recurring curated product features', 'Category exclusivity options', 'Priority campaign planning', 'Monthly performance review'], cta: 'Discuss a Retainer', featured: false },
+];
+function Brand() { return <a href="#" className="brand" aria-label="The 9ja Curator home"><span className="brand-mark">9</span><span className="brand-name">The 9ja Curator<span className="brand-sub">Curated for real life</span></span></a>; }
 function Index() {
-  return (
-    <div
-      className="flex min-h-screen items-center justify-center"
-      style={{ backgroundColor: "#fcfbf8" }}
-    >
-      <img
-        data-lovable-blank-page-placeholder="REMOVE_THIS"
-        src="https://cdn.gpteng.co/blank-app-v1.svg"
-        alt="Your app will live here!"
-      />
-    </div>
-  );
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [category, setCategory] = useState('');
+  const [selectedPackage, setSelectedPackage] = useState('');
+  const [brief, setBrief] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(false);
+  function choosePillar(value: string) { setCategory(value); document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' }); }
+  function selectPackage(value: string) { setSelectedPackage(value); setBrief(null); }
+  async function submitForm(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const data = new FormData(event.currentTarget);
+    setSubmitting(true);
+    const text = `THE 9JA CURATOR — COLLABORATION BRIEF\n\nName: ${data.get('name')}\nBrand / Company: ${data.get('company')}\nCategory: ${data.get('category')}\nEmail: ${data.get('email')}\nPackage: ${selectedPackage || 'Open to recommendations'}\n\nMessage:\n${data.get('message')}\n\nThis brief has been prepared locally and has not been sent.`;
+    await new Promise(resolve => setTimeout(resolve, 550));
+    setBrief(text); setSubmitting(false);
+  }
+  function downloadBrief() {
+    if (!brief) return;
+    const url = URL.createObjectURL(new Blob([brief], { type: 'text/plain;charset=utf-8' }));
+    const link = document.createElement('a'); link.href = url; link.download = '9ja-curator-collaboration-brief.txt'; link.click(); URL.revokeObjectURL(url);
+  }
+  const nav = [{ label: 'Our Curation', href: '#curation' }, { label: 'Why Us', href: '#why-us' }, { label: 'Rate Card', href: '#rate-card' }];
+  return <>
+    <header className="site-header"><div className="container-width h-full flex items-center justify-between"><Brand /><nav aria-label="Main navigation" className="desktop-nav flex items-center gap-9">{nav.map(item => <a key={item.href} href={item.href} className="nav-link">{item.label}</a>)}<Button asChild variant="gold" className="h-10 px-5 text-xs"><a href="#contact">Let’s Collaborate <ArrowUpRight /></a></Button></nav><Button variant="ghost" size="icon" className="mobile-menu" aria-label={menuOpen ? 'Close menu' : 'Open menu'} aria-expanded={menuOpen} onClick={() => setMenuOpen(!menuOpen)}>{menuOpen ? <X /> : <Menu />}</Button></div>{menuOpen && <nav className="mobile-links" aria-label="Mobile navigation">{[...nav, { label: 'Let’s Collaborate', href: '#contact' }].map(item => <a className="nav-link" key={item.href} href={item.href} onClick={() => setMenuOpen(false)}>{item.label}</a>)}</nav>}</header>
+    <main>
+      <section className="hero"><img className="hero-image" src={heroImage} alt="Curated headphones, skincare, sunglasses, a watch and gold accessories on emerald display plinths" width={1600} height={1008} fetchPriority="high" /><div className="container-width hero-inner"><div className="hero-copy"><div className="eyebrow"><span className="status-dot" />Nigeria’s lifestyle, thoughtfully curated</div><h1>The 9ja<br /><span>Curator.</span></h1><p className="hero-description">Bridging global manufacturers and the Nigerian consumer market through trusted product curation.</p><div className="hero-actions"><Button asChild variant="gold"><a href="#contact">Partner With Us <ArrowUpRight /></a></Button><Button asChild variant="heroOutline"><a href="#rate-card">View Rate Card <ArrowRight /></a></Button></div><div className="hero-note"><MapPin size={13} /> Rooted in Nigeria. Connected to the world.</div></div></div><div className="hero-caption">Good products. Real-life relevance.</div></section>
+      <div className="trust-strip"><div className="container-width trust-inner"><div className="trust-item"><ShieldCheck />Trust-first curation</div><div className="trust-item"><Globe2 />Nigerian market insight</div><div className="trust-item"><Layers3 />Three pillars. One lifestyle.</div><div className="trust-item"><Sparkles />Built for brand partnerships</div></div></div>
+      <section id="curation" className="section"><div className="container-width"><div className="section-heading"><div><div className="section-label">The curation pillars</div><h2>Three worlds. One considered lifestyle.</h2></div><p className="section-intro">From what you use to how you feel and what you wear. We discover products with a place in real life.</p></div><div className="pillar-grid">{pillars.map((pillar, index) => <Button key={pillar.title} variant="pillar" size="card" className="pillar-card" onClick={() => choosePillar(pillar.category)} aria-label={`Collaborate on ${pillar.title}`}><img src={pillar.image} alt={pillar.title} width={1024} height={768} loading="lazy" className="pillar-photo" /><div className="pillar-content"><span className="pillar-number">0{index + 1} / THE EDIT</span><div className="pillar-title"><h3>{pillar.title}</h3><ArrowUpRight /></div><p>{pillar.description}</p><span className="pillar-tag">{pillar.tag}</span></div></Button>)}</div></div></section>
+      <section id="why-us" className="section value-section"><div className="container-width value-layout"><div><div className="section-label">The partnership advantage</div><h2>Global products.<br />Local connection.</h2></div><div className="value-grid"><article><Globe2 className="value-icon" /><h3>We know the market.</h3><p>Local habits, buying priorities, and cultural context. Your product, positioned for the Nigerian consumer.</p></article><article><TrendingUp className="value-icon" /><h3>Trust before transactions.</h3><p>Honest, benefit-led reviews designed to turn genuine product interest into confident buying decisions.</p></article><article><Headphones className="value-icon" /><h3>More than one niche.</h3><p>Tech, skincare, and style, connected through authentic lifestyle stories that give your brand more relevance.</p></article></div></div></section>
+      <section id="rate-card" className="section"><div className="container-width"><div className="section-heading"><div><div className="section-label">Partnerships & rate card</div><h2>A partnership that fits your ambition.</h2></div><p className="section-intro">A first spotlight or a long-term relationship.<br />Let’s find the right way to grow together.</p></div><div className="pricing-grid">{packages.map((pkg, index) => <article key={pkg.name} className={`price-card ${pkg.featured ? 'featured' : ''}`}>{pkg.featured && <span className="price-badge">The growth choice</span>}<div className="price-number">0{index + 1} / {index === 0 ? 'DISCOVER' : index === 1 ? 'CONNECT' : 'BUILD'}</div><h3>{pkg.name}</h3><p className="price-description">{pkg.description}</p><div className="price-quote"><strong>{pkg.quote}</strong><span>{pkg.caption}</span></div><ul className="price-features">{pkg.features.map(feature => <li key={feature}><Check />{feature}</li>)}</ul><Button asChild variant={pkg.featured ? 'default' : 'outline'}><a href="#contact" onClick={() => selectPackage(pkg.name)}>{pkg.cta}<ArrowUpRight /></a></Button></article>)}</div><p className="pricing-note">Custom quotes in NGN, based on your deliverables, campaign scope, and usage rights. Final rates agreed before booking.</p></div></section>
+      <section id="contact" className="section contact-section"><div className="container-width contact-layout"><div className="contact-copy"><div className="section-label">Let’s create something worthwhile</div><h2>Your next chapter<br />starts with a conversation.</h2><p>Have a product the Nigerian market should know about? Tell us about your brand and the partnership you have in mind.</p><div className="contact-detail"><MapPin />Based in Nigeria. Open to global brands.</div><div className="contact-detail"><ShieldCheck />Thoughtful partnerships. Shared ambition.</div></div><div>{brief ? <div className="success-panel" role="status"><CheckCircle2 /><h3>Your collaboration brief is ready.</h3><p>Thank you for introducing your brand. Download your brief to keep your details together. It hasn’t been sent yet; online delivery is not connected.</p><div className="flex flex-wrap gap-3"><Button onClick={downloadBrief}><Download />Download brief</Button><Button variant="outline" onClick={() => setBrief(null)}>Back to form</Button></div></div> : <form onSubmit={submitForm}><div className="form-grid"><div className="form-field"><label htmlFor="name">Your Name <span aria-hidden="true">*</span></label><input className="form-control" id="name" name="name" placeholder="Full name" autoComplete="name" required maxLength={120} /></div><div className="form-field"><label htmlFor="company">Brand / Company Name *</label><input className="form-control" id="company" name="company" placeholder="Your brand name" autoComplete="organization" required maxLength={160} /></div><div className="form-field"><label htmlFor="category">Product Category *</label><select className="form-control" id="category" name="category" required value={category} onChange={event => setCategory(event.target.value)}><option value="" disabled>Select a category</option>{pillars.map(p => <option key={p.category}>{p.category}</option>)}<option>Multi-category / Other</option></select></div><div className="form-field"><label htmlFor="email">Email Address *</label><input className="form-control" id="email" name="email" type="email" placeholder="you@brand.com" autoComplete="email" required /></div>{selectedPackage && <div className="form-wide text-xs text-emerald flex items-center justify-between gap-2"><span>Interested in: {selectedPackage}</span><Button type="button" variant="ghost" size="icon" aria-label="Remove selected package" onClick={() => setSelectedPackage('')}><X /></Button></div>}<div className="form-field form-wide"><label htmlFor="message">Tell Us About Your Collaboration *</label><textarea className="form-control" id="message" name="message" placeholder="Your product, your goals, and what you have in mind…" required maxLength={5000} /></div><Button className="form-wide h-11 text-xs" type="submit" disabled={submitting}>{submitting ? 'Preparing your request…' : 'Request a Collaboration'}<Send /></Button></div><p className="form-note">Your details stay private. This form prepares a downloadable brief; online delivery is not connected yet.</p></form>}</div></div></section>
+    </main><footer className="footer"><div className="container-width footer-inner"><Brand /><span className="footer-copy">© 2026 The 9ja Curator. Thoughtfully curated. Always.</span><a className="nav-link flex items-center gap-2" href="#">Back to top <ArrowUpRight size={14} /></a></div></footer>
+  </>;
 }

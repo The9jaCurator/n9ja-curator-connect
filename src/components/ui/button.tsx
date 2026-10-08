@@ -9,6 +9,9 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
+        gold: "bg-primary text-primary-foreground hover:bg-primary/90",
+        heroOutline: "border border-hero-border text-hero-foreground bg-transparent hover:bg-hero-foreground/10",
+        pillar: "w-full h-auto whitespace-normal text-left bg-card text-card-foreground border border-border hover:border-primary p-0 overflow-hidden group",
         default: "bg-primary text-primary-foreground shadow hover:bg-primary/90",
         destructive: "bg-destructive text-destructive-foreground shadow-sm hover:bg-destructive/90",
         outline:
@@ -22,6 +25,7 @@ const buttonVariants = cva(
         sm: "h-8 rounded-md px-3 text-xs",
         lg: "h-10 rounded-md px-8",
         icon: "h-9 w-9",
+        card: "h-auto p-0",
       },
     },
     defaultVariants: {

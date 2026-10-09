@@ -1,4 +1,5 @@
 import { Link, createFileRoute } from '@tanstack/react-router';
+import { useState } from 'react';
 import { ArrowLeft, ArrowUpRight, Box, PackageOpen, ScanSearch, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Brand, SiteFooter, SocialLinks } from '@/components/brand-shell';

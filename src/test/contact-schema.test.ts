@@ -11,7 +11,7 @@ const validContact = {
 
 describe("collaboration brief rules", () => {
   it("always targets the approved team inbox", () => {
-    expect(CONTACT_RECIPIENT).toBe("myrdpa@gmail.com");
+    expect(CONTACT_RECIPIENT).toBe("the9jacurator@gmail.com");
   });
 
   it("accepts a complete brief", () => {

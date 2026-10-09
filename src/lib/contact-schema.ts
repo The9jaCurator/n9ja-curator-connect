@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export const CONTACT_RECIPIENT = "myrdpa@gmail.com";
+export const CONTACT_RECIPIENT = "the9jacurator@gmail.com";
 
 export const contactSchema = z.object({
   name: z

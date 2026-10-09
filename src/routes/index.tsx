@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   ArrowUpRight,
   ArrowRight,
@@ -113,6 +113,21 @@ function Index() {
   const [selectedCategory, setSelectedCategory] = useState("");
   const [selectedPackage, setSelectedPackage] = useState("");
 
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      const cat = params.get("category");
+      const pkg = params.get("package");
+      if (cat) setSelectedCategory(cat);
+      if (pkg) setSelectedPackage(pkg);
+      if (window.location.hash === "#contact" || cat || pkg) {
+        window.setTimeout(() => {
+          document.getElementById("contact")?.scrollIntoView({ behavior: "smooth" });
+        }, 120);
+      }
+    }
+  }, []);
+
   const handlePillarSelect = (category: string) => {
     setSelectedCategory(category);
     document.getElementById("contact")?.scrollIntoView({ behavior: "smooth" });
@@ -143,24 +158,36 @@ function Index() {
             </Link>
             <SocialLinks compact />
           </nav>
-          <button className="mobile-menu-button" onClick={() => setMenuOpen(!menuOpen)}>
-            {menuOpen ? <X /> : <Menu />}
+          <button
+            className="mobile-menu-button"
+            onClick={() => setMenuOpen(!menuOpen)}
+            aria-label="Toggle navigation menu"
+          >
+            {menuOpen ? <X size={20} /> : <Menu size={20} />}
           </button>
         </div>
       </header>
 
       {menuOpen && (
-        <nav className="mobile-nav">
+        <nav className="mobile-nav" aria-label="Mobile navigation">
           {[
             { label: "Our Curation", href: "#curation" },
             { label: "Why Us", href: "#why-us" },
             { label: "Rate Card", href: "#rate-card" },
             { label: "Visual Showcase", href: "/gallery" },
           ].map((link) => (
-            <a key={link.label} href={link.href} className="nav-link">
+            <a
+              key={link.label}
+              href={link.href}
+              className="nav-link"
+              onClick={() => setMenuOpen(false)}
+            >
               {link.label}
             </a>
           ))}
+          <div className="pt-2 border-t border-border">
+            <SocialLinks />
+          </div>
         </nav>
       )}
 

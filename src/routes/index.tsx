@@ -13,7 +13,7 @@ export const Route = createFileRoute('/')({ head: () => ({ meta: [
     { title: 'The 9ja Curator | Lifestyle Curation & Brand Partnerships' },
     { name: 'description', content: 'Bridging global manufacturers and the Nigerian consumer market through trusted product curation. Explore tech, skincare, fashion and brand partnerships.' },
     { property: 'og:title', content: 'The 9ja Curator | Lifestyle Curation & Brand Partnerships' },
-    { property: 'og:description', content: 'Considered products. Local insight. Meaningful partnerships. Discover The 9ja Curator's lifestyle media kit and collaboration packages.' },
+    { property: 'og:description', content: "Considered products. Local insight. Meaningful partnerships. Discover The 9ja Curator's lifestyle media kit and collaboration packages." },
     { property: 'og:type', content: 'website' },
     { name: 'twitter:card', content: 'summary_large_image' },
   ] }), component: Index });

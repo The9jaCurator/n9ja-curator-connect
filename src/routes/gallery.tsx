@@ -1,42 +1,94 @@
-import { Link, createFileRoute } from '@tanstack/react-router';
-import { useState } from 'react';
-import { ArrowLeft, ArrowUpRight, Box, PackageOpen, ScanSearch, Sparkles } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Brand, SiteFooter, SocialLinks } from '@/components/brand-shell';
-import gadgetImage from '@/assets/gallery-gadgets.jpg';
-import skincareImage from '@/assets/gallery-skincare.jpg';
-import fashionImage from '@/assets/gallery-fashion.jpg';
+import { Link, createFileRoute } from "@tanstack/react-router";
+import { useState } from "react";
+import { ArrowLeft, ArrowUpRight, Box, PackageOpen, ScanSearch, Sparkles } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Brand, SiteFooter, SocialLinks } from "@/components/brand-shell";
+import gadgetImage from "@/assets/gallery-gadgets.jpg";
+import skincareImage from "@/assets/gallery-skincare.jpg";
+import fashionImage from "@/assets/gallery-fashion.jpg";
 
-export const Route = createFileRoute('/gallery')({
+export const Route = createFileRoute("/gallery")({
   head: () => ({
     meta: [
-      { title: 'Curation Gallery | The 9ja Curator' },
-      { name: 'description', content: 'Explore sample product styling, unboxing concepts, and benefit-led campaign layouts for gadgets, skincare, and fashion accessories.' },
-      { property: 'og:title', content: 'Curation Gallery | The 9ja Curator' },
-      { property: 'og:description', content: 'A visual showcase of product storytelling concepts created for the Nigerian consumer market.' },
-      { property: 'og:type', content: 'website' },
-      { name: 'twitter:card', content: 'summary_large_image' },
+      { title: "Curation Gallery | The 9ja Curator" },
+      {
+        name: "description",
+        content:
+          "Explore sample product styling, unboxing concepts, and benefit-led campaign layouts for gadgets, skincare, and fashion accessories.",
+      },
+      { property: "og:title", content: "Curation Gallery | The 9ja Curator" },
+      {
+        property: "og:description",
+        content:
+          "A visual showcase of product storytelling concepts created for the Nigerian consumer market.",
+      },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: GalleryPage,
 });
 
-type Category = 'All' | 'Gadgets' | 'Skincare' | 'Fashion';
+type Category = "All" | "Gadgets" | "Skincare" | "Fashion";
 
-const filters: Category[] = ['All', 'Gadgets', 'Skincare', 'Fashion'];
+const filters: Category[] = ["All", "Gadgets", "Skincare", "Fashion"];
 
 const galleryItems = [
-  { category: 'Gadgets' as const, image: gadgetImage, icon: PackageOpen, kicker: 'Unboxing & utility', title: 'Everyday power, elevated', caption: 'Premium storytelling for devices that move seamlessly through modern routines.' },
-  { category: 'Skincare' as const, image: skincareImage, icon: ScanSearch, kicker: 'Benefit-led review', title: 'Texture, ritual, trust', caption: 'Clean product staging designed to highlight sensory appeal and skincare efficacy.' },
-  { category: 'Fashion' as const, image: fashionImage, icon: Sparkles, kicker: 'Lifestyle placement', title: 'The finishing edit', caption: 'Styled accessories and finishing touches that complete a confident everyday look.' },
-  { category: 'Gadgets' as const, image: gadgetImage, icon: Box, kicker: 'Campaign layout', title: 'One ecosystem, one story', caption: 'A curated product system built to connect utility, aesthetics, and practical value.' },
-  { category: 'Skincare' as const, image: skincareImage, icon: PackageOpen, kicker: 'Shelf concept', title: 'The considered shelf', caption: 'Elegant reveal formats balancing glow, ingredient trust, and confidence in every frame.' },
-  { category: 'Fashion' as const, image: fashionImage, icon: ScanSearch, kicker: 'Product detail', title: 'Details worth noticing', caption: 'Sharp close-up styling that brings material feel, finish, and form into focus.' },
+  {
+    category: "Gadgets" as const,
+    image: gadgetImage,
+    icon: PackageOpen,
+    kicker: "Unboxing & utility",
+    title: "Everyday power, elevated",
+    caption: "Premium storytelling for devices that move seamlessly through modern routines.",
+  },
+  {
+    category: "Skincare" as const,
+    image: skincareImage,
+    icon: ScanSearch,
+    kicker: "Benefit-led review",
+    title: "Texture, ritual, trust",
+    caption: "Clean product staging designed to highlight sensory appeal and skincare efficacy.",
+  },
+  {
+    category: "Fashion" as const,
+    image: fashionImage,
+    icon: Sparkles,
+    kicker: "Lifestyle placement",
+    title: "The finishing edit",
+    caption: "Styled accessories and finishing touches that complete a confident everyday look.",
+  },
+  {
+    category: "Gadgets" as const,
+    image: gadgetImage,
+    icon: Box,
+    kicker: "Campaign layout",
+    title: "One ecosystem, one story",
+    caption: "A curated product system built to connect utility, aesthetics, and practical value.",
+  },
+  {
+    category: "Skincare" as const,
+    image: skincareImage,
+    icon: PackageOpen,
+    kicker: "Shelf concept",
+    title: "The considered shelf",
+    caption:
+      "Elegant reveal formats balancing glow, ingredient trust, and confidence in every frame.",
+  },
+  {
+    category: "Fashion" as const,
+    image: fashionImage,
+    icon: ScanSearch,
+    kicker: "Product detail",
+    title: "Details worth noticing",
+    caption: "Sharp close-up styling that brings material feel, finish, and form into focus.",
+  },
 ];
 
 function GalleryPage() {
-  const [filter, setFilter] = useState<Category>('All');
-  const visibleItems = filter === 'All' ? galleryItems : galleryItems.filter((item) => item.category === filter);
+  const [filter, setFilter] = useState<Category>("All");
+  const visibleItems =
+    filter === "All" ? galleryItems : galleryItems.filter((item) => item.category === filter);
 
   return (
     <>
@@ -82,7 +134,7 @@ function GalleryPage() {
                   <button
                     key={item}
                     type="button"
-                    className={filter === item ? 'gallery-filter is-active' : 'gallery-filter'}
+                    className={filter === item ? "gallery-filter is-active" : "gallery-filter"}
                     onClick={() => setFilter(item)}
                     role="tab"
                     aria-selected={filter === item}

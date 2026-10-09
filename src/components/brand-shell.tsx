@@ -1,12 +1,12 @@
-import { Link } from '@tanstack/react-router';
-import { Instagram, Mail, MessageCircle, Music2, Twitter } from 'lucide-react';
+import { Link } from "@tanstack/react-router";
+import { Instagram, Mail, MessageCircle, Music2, Twitter } from "lucide-react";
 
 export const socialProfiles = [
-  { label: 'Instagram', href: 'https://instagram.com/the9jacurator', icon: Instagram },
-  { label: 'TikTok', href: 'https://tiktok.com/@the9jacurator', icon: Music2 },
-  { label: 'X', href: 'https://x.com/the9jacurator', icon: Twitter },
-  { label: 'WhatsApp', href: 'https://wa.me/2348000000000', icon: MessageCircle },
-  { label: 'Email', href: 'mailto:the9jacurator@gmail.com', icon: Mail },
+  { label: "Instagram", href: "https://instagram.com/the9jacurator", icon: Instagram },
+  { label: "TikTok", href: "https://tiktok.com/@the9jacurator", icon: Music2 },
+  { label: "X", href: "https://x.com/the9jacurator", icon: Twitter },
+  { label: "WhatsApp", href: "https://wa.me/2348000000000", icon: MessageCircle },
+  { label: "Email", href: "mailto:the9jacurator@gmail.com", icon: Mail },
 ] as const;
 
 export function Brand() {
@@ -22,7 +22,10 @@ export function Brand() {
 
 export function SocialLinks({ compact = false }: { compact?: boolean }) {
   return (
-    <div className={`social-links ${compact ? 'social-links-compact' : ''}`} aria-label="Social profiles">
+    <div
+      className={`social-links ${compact ? "social-links-compact" : ""}`}
+      aria-label="Social profiles"
+    >
       {socialProfiles.map(({ label, href, icon: Icon }) => (
         <a
           key={label}
@@ -30,8 +33,8 @@ export function SocialLinks({ compact = false }: { compact?: boolean }) {
           href={href}
           title={label}
           aria-label={label}
-          target={href.startsWith('http') ? '_blank' : undefined}
-          rel={href.startsWith('http') ? 'noreferrer noopener' : undefined}
+          target={href.startsWith("http") ? "_blank" : undefined}
+          rel={href.startsWith("http") ? "noreferrer noopener" : undefined}
         >
           <Icon />
         </a>

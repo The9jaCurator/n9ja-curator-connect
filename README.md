@@ -1,12 +1,8 @@
 # 9ja Curator Connect
 
-Build a sleek, modern, mobile-responsive web application and digital portfolio/media kit for a lifestyle brand named "The 9ja Curator". 
-
-
+Build a sleek, modern, mobile-responsive web application and digital portfolio/media kit for a lifestyle brand named "The 9ja Curator".
 
 The platform should look high-end, trustworthy, and professional, optimized for the Nigerian market to pitch manufacturers and brands for immediate partnerships and monetization.
-
-
 
 Key Sections and Features Required:
 
@@ -18,8 +14,6 @@ Key Sections and Features Required:
 
    - Clear Call-to-Action buttons: "Partner With Us" and "View Rate Card".
 
-
-
 2. The 3 Curation Pillars (Interactive Grid/Cards):
 
    - Pillar 1: Gadgets & Tech Accessories (Practical everyday utility, fast chargers, smart tools).
@@ -28,27 +22,19 @@ Key Sections and Features Required:
 
    - Pillar 3: Fashion Accessories (Sleek style, daily wear, aesthetic enhancement).
 
-
-
 3. Why Partner With Us (Value Proposition Section):
 
    - Highlight deep local market insights, high-conversion reviews, and multi-niche lifestyle integration.
 
-
-
 4. Partnership Tiers & Rate Card (Monetization Section):
 
    - Display 3 clean service tiers (Starter Spotlight Package, Growth Integration Package, and Exclusive Ambassador Retainer) formatted nicely in pricing-style cards with features.
-
-
 
 5. Interactive Contact / Booking Form:
 
    - A form where brands can input their Name, Brand/Company Name, Product Category, Email, and Message to request a collaboration.
 
    - Include a working submission state or success popup message.
-
-
 
 Design & Vibe: Clean dark or modern minimalist light theme with sharp accent colors (like gold, deep emerald green, or crisp tech blue), beautiful typography, smooth spacing, and mobile-first responsiveness.
 

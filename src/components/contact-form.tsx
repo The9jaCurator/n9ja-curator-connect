@@ -1,11 +1,11 @@
-import { useCallback, useState, type ChangeEvent, type FormEvent } from 'react';
-import { AlertCircle, CheckCircle2, ChevronRight } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { contactSchema, type ContactInput } from '@/lib/contact-schema';
+import { useCallback, useState, type ChangeEvent, type FormEvent } from "react";
+import { AlertCircle, CheckCircle2, ChevronRight } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { CONTACT_RECIPIENT, contactSchema, type ContactInput } from "@/lib/contact-schema";
 
-const EMAILJS_PUBLIC_KEY = 'id-kOFQ2ufXotqFuh';
-const EMAILJS_SERVICE_ID = 'service_p3lkcqh';
-const EMAILJS_TEMPLATE_ID = 'template_nj4zd3h';
+const EMAILJS_PUBLIC_KEY = "id-kOFQ2ufXotqFuh";
+const EMAILJS_SERVICE_ID = "service_p3lkcqh";
+const EMAILJS_TEMPLATE_ID = "template_nj4zd3h";
 
 interface ContactFormProps {
   selectedCategory?: string;
@@ -13,26 +13,22 @@ interface ContactFormProps {
   onSuccess?: (data: ContactInput) => void;
 }
 
-type FormState = 'idle' | 'submitting' | 'success' | 'error';
+type FormState = "idle" | "submitting" | "success" | "error";
 
-const defaultCategory = 'Gadgets & Tech Accessories';
+const defaultCategory = "Gadgets & Tech Accessories";
 
-export function ContactForm({
-  selectedCategory,
-  selectedPackage,
-  onSuccess,
-}: ContactFormProps) {
-  const [formState, setFormState] = useState<FormState>('idle');
+export function ContactForm({ selectedCategory, selectedPackage, onSuccess }: ContactFormProps) {
+  const [formState, setFormState] = useState<FormState>("idle");
   const [errors, setErrors] = useState<Partial<Record<keyof ContactInput, string>>>({});
   const [submittedData, setSubmittedData] = useState<ContactInput | null>(null);
   const [serverError, setServerError] = useState<string | null>(null);
   const [formData, setFormData] = useState({
-    name: '',
-    company: '',
+    name: "",
+    company: "",
     category: selectedCategory || defaultCategory,
-    email: '',
-    message: '',
-    packageName: selectedPackage || '',
+    email: "",
+    message: "",
+    packageName: selectedPackage || "",
   });
 
   const handleInputChange = useCallback(
@@ -50,17 +46,17 @@ export function ContactForm({
         }));
       }
     },
-    [errors]
+    [errors],
   );
 
   const resetForm = useCallback(() => {
     setFormData({
-      name: '',
-      company: '',
+      name: "",
+      company: "",
       category: selectedCategory || defaultCategory,
-      email: '',
-      message: '',
-      packageName: selectedPackage || '',
+      email: "",
+      message: "",
+      packageName: selectedPackage || "",
     });
     setErrors({});
     setServerError(null);
@@ -68,7 +64,7 @@ export function ContactForm({
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    setFormState('submitting');
+    setFormState("submitting");
     setErrors({});
     setServerError(null);
 
@@ -88,64 +84,75 @@ export function ContactForm({
         nextErrors[key] = issue.message;
       });
       setErrors(nextErrors);
-      setFormState('error');
+      setFormState("error");
       return;
     }
 
     try {
       // Check if EmailJS is available globally
-      if (typeof window === 'undefined' || !('emailjs' in window)) {
-        setServerError('Email service is loading. Please try again in a moment.');
-        setFormState('error');
+      if (typeof window === "undefined" || !("emailjs" in window)) {
+        setServerError("Email service is loading. Please try again in a moment.");
+        setFormState("error");
         return;
       }
 
-      const emailjs = (window as any).emailjs;
+      const emailjs = (
+        window as unknown as {
+          emailjs: {
+            send: (
+              serviceId: string,
+              templateId: string,
+              templateParams: Record<string, unknown>,
+              publicKey: string,
+            ) => Promise<{ status: number }>;
+          };
+        }
+      ).emailjs;
       const { name, company, category, email, message, packageName } = validation.data;
 
       const response = await emailjs.send(
         EMAILJS_SERVICE_ID,
         EMAILJS_TEMPLATE_ID,
         {
-          to_email: 'the9jacurator@gmail.com',
-          to_name: 'The 9ja Curator',
+          to_email: CONTACT_RECIPIENT,
+          to_name: "The 9ja Curator",
           from_name: name,
           from_email: email,
           company_name: company,
           category,
-          package_interest: packageName || 'Not specified',
+          package_interest: packageName || "Not specified",
           message,
-          submission_date: new Date().toLocaleDateString('en-NG', {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric',
+          submission_date: new Date().toLocaleDateString("en-NG", {
+            year: "numeric",
+            month: "long",
+            day: "numeric",
           }),
         },
-        EMAILJS_PUBLIC_KEY
+        EMAILJS_PUBLIC_KEY,
       );
 
       if (response.status === 200) {
         setSubmittedData(validation.data);
-        setFormState('success');
+        setFormState("success");
         resetForm();
         onSuccess?.(validation.data);
         window.setTimeout(() => {
-          setFormState('idle');
+          setFormState("idle");
           setSubmittedData(null);
         }, 6000);
       } else {
-        throw new Error('Email send failed');
+        throw new Error("Email send failed");
       }
     } catch (error) {
-      console.error('EmailJS error:', error);
+      console.error("EmailJS error:", error);
       setServerError(
-        `Failed to send your message: ${error instanceof Error ? error.message : 'Unknown error'}. Please try again.`
+        `Failed to send your message: ${error instanceof Error ? error.message : "Unknown error"}. Please try again.`,
       );
-      setFormState('error');
+      setFormState("error");
     }
   }
 
-  if (formState === 'success' && submittedData) {
+  if (formState === "success" && submittedData) {
     return (
       <div className="success-confirmation">
         <div className="success-panel">
@@ -160,7 +167,7 @@ export function ContactForm({
           </p>
           <Button
             onClick={() => {
-              setFormState('idle');
+              setFormState("idle");
               setSubmittedData(null);
             }}
             className="mt-6"
@@ -174,10 +181,10 @@ export function ContactForm({
 
   return (
     <form onSubmit={handleSubmit} className="contact-form" noValidate>
-      {formState === 'error' && (serverError || Object.keys(errors).length > 0) && (
+      {formState === "error" && (serverError || Object.keys(errors).length > 0) && (
         <div className="form-error-banner" role="alert">
           <AlertCircle />
-          <p>{serverError || 'Please correct the highlighted fields and try again.'}</p>
+          <p>{serverError || "Please correct the highlighted fields and try again."}</p>
         </div>
       )}
 
@@ -191,8 +198,8 @@ export function ContactForm({
             value={formData.name}
             onChange={handleInputChange}
             placeholder="Jane Doe"
-            className={`form-control ${errors.name ? 'form-control-error' : ''}`}
-            disabled={formState === 'submitting'}
+            className={`form-control ${errors.name ? "form-control-error" : ""}`}
+            disabled={formState === "submitting"}
           />
           {errors.name && <span className="form-error-text">{errors.name}</span>}
         </div>
@@ -206,8 +213,8 @@ export function ContactForm({
             value={formData.company}
             onChange={handleInputChange}
             placeholder="Your Brand"
-            className={`form-control ${errors.company ? 'form-control-error' : ''}`}
-            disabled={formState === 'submitting'}
+            className={`form-control ${errors.company ? "form-control-error" : ""}`}
+            disabled={formState === "submitting"}
           />
           {errors.company && <span className="form-error-text">{errors.company}</span>}
         </div>
@@ -219,8 +226,8 @@ export function ContactForm({
             name="category"
             value={formData.category}
             onChange={handleInputChange}
-            className={`form-control ${errors.category ? 'form-control-error' : ''}`}
-            disabled={formState === 'submitting'}
+            className={`form-control ${errors.category ? "form-control-error" : ""}`}
+            disabled={formState === "submitting"}
           >
             <option value="Gadgets & Tech Accessories">Gadgets & Tech Accessories</option>
             <option value="Skincare Products">Skincare Products</option>
@@ -239,8 +246,8 @@ export function ContactForm({
             value={formData.email}
             onChange={handleInputChange}
             placeholder="jane@brandname.com"
-            className={`form-control ${errors.email ? 'form-control-error' : ''}`}
-            disabled={formState === 'submitting'}
+            className={`form-control ${errors.email ? "form-control-error" : ""}`}
+            disabled={formState === "submitting"}
           />
           {errors.email && <span className="form-error-text">{errors.email}</span>}
         </div>
@@ -255,9 +262,11 @@ export function ContactForm({
             onChange={handleInputChange}
             placeholder="e.g. Starter Spotlight Package"
             className="form-control"
-            disabled={formState === 'submitting'}
+            disabled={formState === "submitting"}
           />
-          <span className="form-note">Let us know which package you have in mind, or leave blank to explore options.</span>
+          <span className="form-note">
+            Let us know which package you have in mind, or leave blank to explore options.
+          </span>
         </div>
 
         <div className="form-field form-wide">
@@ -268,16 +277,16 @@ export function ContactForm({
             value={formData.message}
             onChange={handleInputChange}
             placeholder="Tell us about your product, goals, audience, and what you'd like to build together..."
-            className={`form-control ${errors.message ? 'form-control-error' : ''}`}
-            disabled={formState === 'submitting'}
+            className={`form-control ${errors.message ? "form-control-error" : ""}`}
+            disabled={formState === "submitting"}
           />
           {errors.message && <span className="form-error-text">{errors.message}</span>}
         </div>
       </div>
 
       <div className="form-actions">
-        <Button type="submit" disabled={formState === 'submitting'} className="form-submit-button">
-          {formState === 'submitting' ? (
+        <Button type="submit" disabled={formState === "submitting"} className="form-submit-button">
+          {formState === "submitting" ? (
             <>
               <span className="spinner" />
               Sending...
